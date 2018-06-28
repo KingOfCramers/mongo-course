@@ -59,8 +59,14 @@ describe("Updating records", () => {
     });
 
 // UPDATE OPERATORS
-    /// Update operators
-    it("Model class increment postcount by 1", () => {
-        User.update({name: "Joe"}, { $inc: {posCount: 1} });
-    })
+    /// Update operators are passed into the update method. The query returns the list of documents. The next argument is the operator itself, in this case the incrementor ($inc) which points to the object that contins the value you'd like to update on the document, and the amount you'd like to increment.
+    it("Model class increment postcount by 1", (done) => {
+        User.update({name: "Joe"}, { $inc: {postCount: 1} })
+        .then(() => User.findOne({ name: "Joe"}))
+        .then((user) => {
+            assert(user.postCount === 1);
+            done();
+        })
+        .catch((e) => console.log(e));
+    });
 });
