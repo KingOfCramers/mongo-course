@@ -35,4 +35,23 @@ describe("Subdocuments", () => {
                 done();
             });
     });
+
+    it("Can remove an existing subdocument", (done) => {
+        const joe = new User({
+            name: "joe",
+            posts: [{title: "Fake title"}]
+        });
+
+        joe.save()
+            .then(() => User.findOne({ name: "joe"}))
+            .then((user) => {
+                user.posts[0].remove(); // Unlike removing a document (like joe.remove) removing a nested subdocument does not automatically communicate with our database, we still have to call save on the parent record.
+                return user.save();
+            })
+            .then(() => User.findOne({ name: "joe"}))
+            .then((user) => {
+                assert(user.posts.length === 0);
+                done();
+            })
+    })
 });
