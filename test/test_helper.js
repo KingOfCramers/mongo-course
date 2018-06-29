@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 // This file runs before the rest of the test files because Mocha finds the before function.
-mongoose.promise = global.promise //sdfsdf
+mongoose.promise = global.promise // Set global promises
+
+const { User } = require("../src/user")
 
 before((done) => {
 
@@ -15,7 +17,9 @@ before((done) => {
         .on("error", (err) => console.warn("error", err)); // Event handler for open error.
 });
 
-beforeEach((done) => { // Before each test.
-    mongoose.connection.collections.users.drop(); // Equivalent to removing all data from database.
-    done();
-})
+beforeEach(done => { // Before each test.
+    User.remove({}, (err) => {
+        if (err) throw new Error(err)
+        done();
+    });
+});

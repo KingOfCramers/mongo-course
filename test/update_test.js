@@ -23,7 +23,6 @@ describe("Updating records", () => {
             .catch((e) => console.log(e));
     }
 
-
 /// INSTANCE UPDATES
     it("Instance type using set and save", (done) => {
         joe.set("name", "Harry"); // Done in RAM, does not save to db.
