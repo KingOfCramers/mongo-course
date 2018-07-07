@@ -6,7 +6,7 @@ describe("Updating records", () => {
     let joe;
 
     beforeEach((done) => { // Comes from mocha. Run before each test.
-        joe = new User({ name: "Joe", postCount: 0});
+        joe = new User({ name: "Joe", likes: 0});
         joe.save()
             .then(() => done())
     });
@@ -59,11 +59,11 @@ describe("Updating records", () => {
 
 // UPDATE OPERATORS
     /// Update operators are passed into the update method. The query returns the list of documents. The next argument is the operator itself, in this case the incrementor ($inc) which points to the object that contins the value you'd like to update on the document, and the amount you'd like to increment.
-    it("Model class increment postcount by 1", (done) => {
-        User.update({name: "Joe"}, { $inc: {postCount: 1} })
+    it("Model class increment likes by 1", (done) => {
+        User.update({name: "Joe"}, { $inc: {likes: 1} })
         .then(() => User.findOne({ name: "Joe"}))
         .then((user) => {
-            assert(user.postCount === 1);
+            assert(user.likes === 1);
             done();
         })
         .catch((e) => console.log(e));

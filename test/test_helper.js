@@ -18,8 +18,14 @@ before((done) => {
 });
 
 beforeEach(done => { // Before each test.
-    User.remove({}, (err) => {
-        if (err) throw new Error(err)
-        done();
+    const { users, comments, blogposts } = mongoose.connection.collections;
+    // Each represents a collection in our database. MONGOOSE NORMALIZES THE NAME, so that blogPosts === blogposts;
+
+    users.drop(() => { // Cannot drop multiple collections at the same time.
+      comments.drop(() => {
+        blogposts.drop(() => {
+          done();
+        });
+      });
     });
 });
