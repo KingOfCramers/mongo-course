@@ -1,5 +1,8 @@
 const Artist = require('../models/artist');
 
+// REQUIRES INDEX ON NAME FIELD
+
+
 /**
  * Searches through the Artist collection
  * @param {object} criteria An object with a name, age, and yearsActive
@@ -8,8 +11,6 @@ const Artist = require('../models/artist');
  * @param {integer} limit How many records to return in the result set
  * @return {promise} A promise that resolves with the artists, count, skip, and limit
  */
-
-
 
 // Get data from front-end
 module.exports = (criteria, sortBy, skip = 0, limit = 20) => {
@@ -20,7 +21,6 @@ module.exports = (criteria, sortBy, skip = 0, limit = 20) => {
     yearsActive: { min: 15, max: 20 }
    }
   */
-
   const query = Artist.find(buildQuery(criteria))
     .sort({ [sortBy]: 1}) // This is not an array, it's ES6 to add a key value pair vased on a variable.
     .skip(skip)
@@ -29,7 +29,7 @@ module.exports = (criteria, sortBy, skip = 0, limit = 20) => {
     // Must return object like  -->
     // { all: [allmodel objects], count: 13(for ex.), skip: 0, limit: 20}
     // Return promise that resolves with expected object
-    return Promise.all([query, Artist.count()])
+    return Promise.all([query, Artist.find(buildQuery(criteria)).count()])
       .then((results) => { // An array of resolved promises
         return {
           all: results[0],
@@ -40,11 +40,13 @@ module.exports = (criteria, sortBy, skip = 0, limit = 20) => {
       });
 };
 
-
 // Build the query down here... and return an object back to the .find method.
 const buildQuery = (criteria) => {
   const query = {};
 
+  if(criteria.name){
+    query.$text = { $search: criteria.name };  // later used in find search
+  }
   if(criteria.age){ // criteria.age is only returned if someone has moved the age slider
     query.age = {
       $gte: criteria.age.min,
@@ -58,4 +60,12 @@ const buildQuery = (criteria) => {
     }
   }
   return query;
+  // AKA db.artists.find(
+      // {
+        // age: { $gte: 10, $lte: 20 },
+        // $text: { $search: "coffee" },
+        // yearsActive: { $gte: 2, $lte: 10}
+      //  }
+    //  ).then((filt_artists) => { blah blah blah});
+
 };
